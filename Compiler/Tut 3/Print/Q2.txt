@@ -1,0 +1,97 @@
+  
+    cout<<"Making the Parsing Table."<<endl;
+    for(int count=0;count<no_nonTerminals;count++)
+    {
+        list[count].current=list[count].head;
+        while(list[count].current!=NULL)
+        {
+            cout<<endl<<"For "<<nonTerminals[count]<<" -> "<<list[count].current->state<<endl;
+            int index1=0;
+            char c1,c2;
+            int i1,i2;
+            while(list[count].current->state[index1]!='\0')
+            {
+                c1=list[count].current->state[index1];
+                if(c1>=65 && c1<=90)
+                {
+                     i1=find(nonTerminals,c1,no_nonTerminals);
+                      cout<<"Adding: ";
+                     for (si=FIRST[i1+index].begin(); si!=FIRST[i1+index].end(); si++)
+                     {
+                         if(*si != epsilon)
+                         {
+                             FIRSTSET.insert(*si);
+                             cout<<*si<<"   ";
+                         }
+                     }
+                     si=FIRST[i1+index].find(epsilon);
+                     if(si==FIRST[i1+index].end())
+                        break;
+                }
+                else
+                {
+                   if(c1=='%')
+                   {
+                         cout<<"Epsilon production"<<endl;
+                         cout<<"Adding: ";
+                         for(si=FOLLOW[count].begin();si!=FOLLOW[count].end();si++)
+                         {
+                             cout<<*si<<"   ";
+                             FIRSTSET.insert(*si);
+                         }
+                         break;
+                             
+                   }
+                   else
+                   {
+                        i1=find(terminals,c1,no_terminals); 
+                        cout<<"Adding: ";
+                        si=FIRST[i1].begin();
+                        FIRSTSET.insert(*si);
+                        cout<<*si<<"  ";
+                        break;
+                   }
+                }
+                index1++;
+            }
+            if(list[count].current->state[index1]=='\0')
+            {
+                 for(si=FOLLOW[count].begin();si!=FOLLOW[count].end();si++)
+                     FIRSTSET.insert(*si);
+            }
+            cout<<endl<<"First Set:  ";
+            for (si=FIRSTSET.begin(); si!=FIRSTSET.end(); si++)
+            {
+                cout<<*si<<" ";
+                c2=*si;
+                i2=find(terminals,c2,no_terminals);
+                parsingTable[count][i2]=list[count].current->state;
+            }   
+            list[count].current=list[count].current->next;
+            FIRSTSET.clear();
+        }
+    }
+    cout<<endl;
+    cout<<endl<<"------------------ Parsing Table --------------------"<<endl;
+    cout<<"|     |";
+    for(int i=0;i<no_terminals;i++)
+            cout<<"  "<<terminals[i]<<"  |"; 
+        
+    for(int i=0;i<no_nonTerminals;i++)
+    {
+            cout<<"|  "<<nonTerminals[i]<<"  |";
+            for(int j=0;j<no_terminals;j++)
+            {
+                    if(parsingTable[i][j]!=null)
+                         cout<<"  "<<parsingTable[i][j]<<"  |";
+                    else
+                    {
+                        cout<<"     |";
+                    }
+            }
+            cout<<endl;
+    }                  
+    cout<<"------------------------------------------------------"<<endl;
+    system("pause");
+    return 0;
+}

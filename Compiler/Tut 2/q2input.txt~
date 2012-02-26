@@ -1,0 +1,11 @@
+START
+1
+1
+if(jdnck)
+{hello comment}
+end
+begin
+
+1.DOUBLE PRECISION
+2.DOUBLE PRECISION
+END

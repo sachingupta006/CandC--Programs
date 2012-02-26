@@ -1,0 +1,46 @@
+%{
+#include <math.h>
+#include<stdlib.h>
+%}
+
+DIGIT	[0-9]
+ID	[a-z][a-z0-9]*
+
+%%
+{DIGIT}+    {
+   		printf( "An Integer: %s (%d)\n",yytext, atoi(yytext));
+	     }
+
+{DIGIT}+"."{DIGIT}*  { 
+			printf( "A Float: %s (%g)\n",yytext,atof(yytext));
+		      }
+if|then|begin|end|procedure|function  {
+                                          printf("A Keyword: %s\n",yytext);
+					}
+{ID}  printf("An Identifier: %s\n",yytext);
+
+"+"|"-"|"*"|"/"   printf(" An Operator: %s\n",yytext);
+"{"[a-z0-9A-Z]*"}" ;
+
+[\t\n]+		;
+
+.  		printf("Unrecognized charaters: %s\n",yytext);
+
+%%
+
+int yywrap()
+{
+return 1;
+}
+
+int main()
+{
+yyin=fopen("input1.txt","r");
+yylex();
+
+printf("\n");
+fclose(yyin);
+return 0;
+}
+    
+

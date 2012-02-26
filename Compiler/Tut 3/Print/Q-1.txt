@@ -1,0 +1,331 @@
+set <char>::iterator si;
+int done=0;
+char epsilon='%';
+char* null ="NULL";
+
+int find(char *list, char val, int length)
+{
+    for(int i=0;i<length;i++)
+    {
+            if(list[i]==val)
+                return i;
+    }
+}
+    
+    
+class AList
+{
+    private:
+            struct node
+            {
+                   char state[10];
+                   node* next;
+            };
+            int elements;
+                                   
+    public:
+           node* head;
+           node* current;
+           AList()
+           {
+                  head=NULL;
+                  current=NULL;
+                  elements=0;
+           }
+           void add(char* b, int length)
+           {
+                if(elements==0)
+                {
+                    node *temp=new node;      
+                    int i;
+                    for(i=0;i<length;i++)
+                    {
+                            temp->state[i]=b[i];
+                    }
+                    temp->state[i]='\0';
+                    temp->next=NULL;
+                    head=temp;
+                    current=head;
+
+
+                }    
+                else
+                {
+                    node *temp=new node;
+                    int i;
+                    for(i=0;i<length;i++)
+                    {
+                            temp->state[i]=b[i];
+                    }
+                    temp->state[i]='\0';
+                    temp->next=NULL;
+ 
+                    current->next=temp;
+                    current=temp;
+                }
+                elements++;               
+           }    
+               
+};
+void calculateFIRST(int i,int index, AList* list,int no_nonTerminals,int no_terminals, char* nonTerminals,char *terminals,set <char> *FIRST )
+{
+       list[i].current=list[i].head; 
+       int flag=1;
+       int start=0;
+       while(list[i].current!=NULL)
+           {
+                               char temp=list[i].current->state[start];
+                               if(temp >64 && temp < 92)
+                               {
+                                       while( flag==1)
+                                       {
+                                                    int ntIndex=find(nonTerminals,temp,no_nonTerminals);
+                                                    si=FIRST[ntIndex+index].begin();
+                                                    if(si==FIRST[ntIndex+index].end())
+                                                    {
+                                                        cout<<endl;
+                                                        calculateFIRST( ntIndex,index,list,no_nonTerminals,no_terminals,nonTerminals,terminals,FIRST);
+                                                    }
+                                                    else
+                                                    {
+                                                        for (si=FIRST[ntIndex+index].begin(); si!=FIRST[ntIndex+index].end(); si++) 
+                                                        {
+                                                            FIRST[i+index].insert(*si);
+                                                            if(*si=='%')
+                                                            {
+                                                                        flag=1;
+                                                                        start++;
+                                                                        temp=list[i].current->state[start];
+                                                            }
+                                                            else
+                                                            {
+                                                              flag=0;
+                                                            }
+                                                        }
+                                                    }
+                                       }
+                               }
+                               else
+                               {
+                                   char temp=list[i].current->state[0];
+                                   if(temp=='%')
+                                   {
+                                       FIRST[i+index].insert('%');
+
+                                   }
+                                   else
+                                   {
+                                       int tIndex=find(terminals,temp,no_terminals);
+                                       si=FIRST[tIndex].begin();
+                                       FIRST[i+index].insert(*si);
+
+                                   }
+                               }
+                           list[i].current=list[i].current->next;    
+
+                               
+           } 
+           done++;
+}          
+                   
+int main()
+{
+
+    cout<<"Enter the no of non-terminals"<<endl;
+    int no_nonTerminals;
+    cin>>no_nonTerminals;
+    
+    cout<<"Enter the no of terminals"<<endl;
+    int no_terminals;
+    cin>>no_terminals;
+    no_terminals++;
+    
+    AList list[no_nonTerminals];                
+    char nonTerminals[no_nonTerminals];
+    char terminals[no_terminals];
+    
+    set <char> FIRST[no_nonTerminals+no_terminals+1];   
+    set <char> FOLLOW[no_nonTerminals];               
+    set <char> FIRSTSET;
+    
+    char* parsingTable[no_nonTerminals][no_terminals+1]; 
+    for (int i=0;i< no_nonTerminals;i++)
+    {
+        for(int j=0;j<no_terminals;j++)
+        {
+                parsingTable[i][j]=null;
+        }
+    }
+    
+    cout<<"Enter the terminals"<<endl;
+    char term;
+    int index;
+    for( index = 0;index < no_terminals-1;index++)
+    {
+            cin>>term;
+            terminals[index]=term;
+            FIRST[index].insert(term);
+    }
+    term='$';
+    terminals[index]=term;
+    FIRST[index].insert(term);
+    index++;
+    
+    cout<<"The FIRST set for the terminals is"<<endl;
+    for(int l=0;l<no_terminals;l++)
+    {
+            si=FIRST[l].begin();
+            cout<<*si<<"    ";
+    }   
+    
+    cout<<endl<<"Enter the productions for the non-terminals"<<endl<<endl;
+    cout<<"For epsilon production enter % "<<endl;
+    char state;
+    char inp[10];
+    for(int i=0;i<no_nonTerminals;i++)
+    {
+            cout<<"Enter the Non-terminal"<<endl;
+            cin>>state;
+            nonTerminals[i]=state;
+            cout<<"Enter the productions. Enter 0 when done"<<endl;
+            cin>>inp;
+            while(inp[0]!='0')
+            {
+                              int len=strlen(inp);
+                              list[i].add(inp,len);
+                              cin>>inp;
+            }                        
+    }
+    cout<<"Productions added are"<<endl<<endl;
+    for(int count=0;count<no_nonTerminals;count++)
+    {
+        list[count].current=list[count].head;
+        while(list[count].current!=NULL)
+        {
+            cout<<list[count].current->state<<" ";
+            list[count].current=list[count].current->next;
+        }
+        cout<<endl;
+        
+    }        
+    cout<<"Enter the start symbol"<<endl;
+    char start;
+    cin>>start;
+
+    int ntIndex=find(nonTerminals,start,no_nonTerminals);
+    FOLLOW[ntIndex].insert('$');
+    calculateFIRST( ntIndex,index,list,no_nonTerminals,no_terminals,nonTerminals,terminals,FIRST);        
+    
+    int check=0;
+    while(done!=no_nonTerminals)
+    {
+        if(FIRST[check+index].begin()==FIRST[check+index].end())
+            calculateFIRST( check,index,list,no_nonTerminals,no_terminals,nonTerminals,terminals,FIRST);
+        else
+        {
+
+            check++;
+            continue;
+        }    
+    }
+    cout<<endl<<"------- FIRST set---------"<<endl;    
+    for(int l=index;l<no_nonTerminals+index;l++)
+    {
+        cout<<"For "<<nonTerminals[l-index]<<":    ";
+        for (si=FIRST[l].begin(); si!=FIRST[l].end(); si++)  
+        {  
+           cout << *si << " ";  
+        }
+        cout<<endl;
+    }
+    cout<<endl<<"------- FOLLOW set---------"<<endl;
+    for(int count=0;count<no_nonTerminals;count++)
+    {
+        list[count].current=list[count].head;
+        while(list[count].current!=NULL)
+        {
+            cout<<endl;
+            int index1=0;
+            int flag=0;
+            char c1,c2;
+            int i1,i2;
+            while(list[count].current->state[index1]!='\0')
+            {
+                c1=list[count].current->state[index1];
+                if(c1>=65 && c1<=90)
+                {
+                     c2=list[count].current->state[index1+1];
+                     i1=find(nonTerminals,c1,no_nonTerminals);
+                     if(c2!='\0')
+                     {            
+                           if(c2>=65 && c2<=90)
+                           {
+                                i2=find(nonTerminals,c2,no_nonTerminals);
+                                for (si=FIRST[i2+index].begin(); si!=FIRST[i2+index].end(); si++)
+                                {
+                                    if(*si!='%')
+                                        FOLLOW[i1].insert(*si);             
+                                }     
+                           }
+                           else
+                           {
+                                i2=find(terminals,c2,no_terminals);
+                                si=FIRST[i2].begin();
+                                FOLLOW[i1].insert(*si);
+                           }                         
+                     }
+                }
+                index1++;
+            }            
+            list[count].current=list[count].current->next;
+        }
+    }  
+    for(int count=0;count<no_nonTerminals;count++)
+    {
+        list[count].current=list[count].head;
+        while(list[count].current!=NULL)
+        {
+            int index1=0;
+            int flag=0;
+            char c1,c2;
+            int i1,i2;
+            while(list[count].current->state[index1]!='\0')
+            {
+                c1=list[count].current->state[index1];
+                if(c1>=65 && c1<=90)
+                {
+                     c2=list[count].current->state[index1+1];
+                     i1=find(nonTerminals,c1,no_nonTerminals);
+                     if(c2!='\0')
+                     {            
+                           if(c2>=65 && c2<=90)
+                           {
+                                i2=find(nonTerminals,c2,no_nonTerminals);
+                                si=FIRST[i2+index].find(epsilon);
+                                if(si!=FIRST[i2+index].end())
+                                {
+                                     for(si=FOLLOW[count].begin();si!=FOLLOW[count].end(); si++)
+                                        FOLLOW[i1].insert(*si);
+                                }
+                           }
+                     }
+                     else
+                     {
+                                for(si=FOLLOW[count].begin();si!=FOLLOW[count].end(); si++)
+                                      FOLLOW[i1].insert(*si);
+                     }                         
+                }
+                index1++;
+            }            
+            list[count].current=list[count].current->next;
+        }
+    } 
+    for(int l=0;l<no_nonTerminals;l++)
+    {
+        cout<<"For "<<nonTerminals[l]<<":    ";
+        for (si=FOLLOW[l].begin(); si!=FOLLOW[l].end(); si++)  
+        {  
+           cout << *si <<" ";  
+        }
+        cout<<endl;
+    } 

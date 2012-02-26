@@ -1,0 +1,88 @@
+    cout<<endl<<endl<<"Parsing an input"<<endl;
+    cout<<"Enter an input"<<endl;
+    char input[20];
+    cin>>input;
+    int length = strlen(input);
+    input[length]='$';
+    input[++length]='\0';
+    cout<<"Final Input: "<<input<<endl;
+    stack<char> S;
+    S.push('$');
+    S.push(start);
+    char* ip=input;
+    char inp_value;
+    char stack_value;
+    char *prod=" ";
+    int i1,i2,prod_len;
+    char prev=' ';
+    int flag=0;
+    char prev_char;
+    
+    while(stack_value!='$')
+    {
+         inp_value=*ip;
+         stack_value=S.peep();
+         i2=find(terminals,inp_value,no_terminals);
+         
+         if(stack_value<65 || stack_value>90)
+         {
+            S.display();
+             cout<<"    "<<ip<<"    "<<prev<<" -> "<<prod<<endl;
+             if(stack_value==inp_value)
+             {
+                  S.pop();
+                  prev_char=*ip;
+                  ip++;
+                  
+             }
+             else
+             {
+                 cout<<"Error"<<endl;
+                 break;
+             }
+             prev=stack_value;
+             flag=1;
+         }
+         
+         else
+         {
+             if(!flag)
+             {
+                      S.display();
+                      cout<<"    "<<ip<<"    "<<prev<<" -> "<<prod<<endl;
+             }
+             else
+             {
+                 S.display();
+                 cout<<"    "<<ip<<"    "<<prev_char<<" : popped"<<endl;
+                 flag=0;
+             }
+             i1=find(nonTerminals,stack_value,no_nonTerminals);
+             prod=parsingTable[i1][i2];
+             if(prod!=null)
+             {
+                 if((*prod)=='%')
+                 {
+                     S.pop();
+                 }
+                 else
+                 {
+                     S.pop();
+                     int l=strlen(prod);
+                     for(int c=l-1;c>=0;c--)
+                         S.push(prod[c]);
+                 }
+             }
+             else
+             {
+                 cout<<"Error"<<endl;
+                 break;
+             }
+             prev=stack_value;
+         }
+         stack_value=S.peep();
+
+    }
+    cout<<"    "<<ip<<"    "<<prev<<" -> "<<prod<<endl;
+    if(stack_value=='$')
+       cout<<"Input successfully accepted"<<endl;     

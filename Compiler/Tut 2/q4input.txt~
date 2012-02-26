@@ -1,0 +1,13 @@
+procedure A
+    var char n;
+    procedure B
+       var char n;
+       writeln(n);
+       n='c';
+       writeln(n);
+       DOUBLE PRECISION
+       DOUBLE PRECISION
+    end
+end
+
+

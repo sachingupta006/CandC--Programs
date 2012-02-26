@@ -1,0 +1,28 @@
+Input
+
+START
+1
+1
+if(jdnck)
+{hello comment}
+end
+begin
+
+1.DOUBLE PRECISION
+2.DOUBLE PRECISION
+END
+
+
+Output
+
+An Integer: 1 (1)
+An Integer: 1 (1)
+A Keyword: if
+An Identifier: jdnck
+An Identifier: hello
+An Identifier: comment
+A Keyword: end
+A Keyword: begin
+A Float: 1. (1)
+A Float: 2. (2)
+

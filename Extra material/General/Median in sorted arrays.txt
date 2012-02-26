@@ -1,0 +1,48 @@
+Method 2 (By comparing the medians of two arrays)
+
+This method works by first getting medians of the two sorted arrays and then comparing them.
+
+Let ar1 and ar2 be the input arrays.
+
+Algorithm:
+
+1) Calculate the medians m1 and m2 of the input arrays ar1[]
+   and ar2[] respectively.
+2) If m1 and m2 both are equal then we are done.
+     return m1 (or m2)
+3) If m1 is greater than m2, then median is present in one
+   of the below two subarrays.
+    a)  From first element of ar1 to m1 (ar1[0...|_n/2_|])
+    b)  From m2 to last element of ar2  (ar2[|_n/2_|...n-1])
+4) If m2 is greater than m1, then median is present in one
+   of the below two subarrays.
+   a)  From m1 to last element of ar1  (ar1[|_n/2_|...n-1])
+   b)  From first element of ar2 to m2 (ar2[0...|_n/2_|])
+4) Repeat the above process until size of both the subarrays
+   becomes 2.
+5) If size of the two arrays is 2 then use below formula to get
+  the median.
+    Median = (max(ar1[0], ar2[0]) + min(ar1[1], ar2[1]))/2
+
+Method 3 (By doing binary search for the median):
+
+The basic idea is that if you are given two arrays ar1[] and ar2[] and know the length of each, you can check whether an element ar1[i] is the median in constant time. Suppose that the median is ar1[i]. Since the array is sorted, it is greater than exactly i-1 values in array ar1[]. Then if it is the median, it is also greater than exactly j = n – i – 1 elements in ar2[].
+
+It requires constant time to check if ar2[j] <= ar1[i] <= ar2[j + 1]. If ar1[i] is not the median, then depending on whether ar1[i] is greater or less than ar2[j] and ar2[j + 1], you know that ar1[i] is either greater than or less than the median. Thus you can binary search for median in O(lg n) worst-case time.
+
+For two arrays ar1 and ar2, first do binary search in ar1[]. If you reach at the end (left or right) of the first array and don't find median, start searching in the second array ar2[].
+
+1) Get the middle element of ar1[] using array indexes left and right.
+   Let index of the middle element be i.
+2) Calculate the corresponding index j of ar2[]
+     j = n – i – 1
+3) If ar1[i] >= ar2[j] and ar1[i] <= ar2[j+1] then ar1[i] and ar2[j]
+   are the middle elements.
+     return average of ar2[j] and ar1[i]
+4) If ar1[i] is greater than both ar2[j] and ar2[j+1] then
+     do binary search in left half  (i.e., arr[left ... i-1])
+5) If ar1[i] is smaller than both ar2[j] and ar2[j+1] then
+     do binary search in right half (i.e., arr[i+1....right])
+6) If you reach at any corner of ar1[] then do binary search in ar2[]
+
+

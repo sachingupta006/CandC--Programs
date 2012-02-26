@@ -1,0 +1,23 @@
+%{
+%}
+ws	[\t \n]
+
+%%
+{ws}+	{printf(" ");}
+.	{printf("%s",yytext);}
+
+%%
+int yywrap()
+{
+return 1;
+}
+
+int main()
+{
+yyin=fopen("input1.txt","r");
+yylex();
+
+printf("\n");
+fclose(yyin);
+return 0;
+}
